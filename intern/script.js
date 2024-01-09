@@ -5,10 +5,7 @@ let totalElapsedTime = 0;
 
 function startStopwatch() {
     if (!running) {
-        startTime = Date.now();
-        if (lapTimes.length === 0) {
-            totalElapsedTime = 0; // Reset totalElapsedTime only if lapTimes is empty (first start)
-        }
+        startTime = Date.now() - totalElapsedTime;
         running = true;
         updateStopwatch();
     }
@@ -17,10 +14,11 @@ function startStopwatch() {
 function stopStopwatch() {
     if (running) {
         running = false;
-        totalElapsedTime += Date.now() - startTime;
-        lapTimes.push(Date.now() - startTime);
+        totalElapsedTime = Date.now() - startTime;
+        updateLapList();
     }
 }
+
 
 function lapStopwatch() {
     if (running) {
@@ -41,7 +39,7 @@ function resetStopwatch() {
 
 function updateStopwatch() {
     if (running) {
-        const elapsedTime = totalElapsedTime + (Date.now() - startTime);
+        const elapsedTime = Date.now() - startTime;
         const formattedTime = formatTime(elapsedTime);
         document.getElementById('stopwatch').innerText = formattedTime;
         setTimeout(updateStopwatch, 10);
@@ -64,16 +62,7 @@ function updateLapList() {
 
     lapTimes.forEach((lap, index) => {
         const listItem = document.createElement('li');
-        listItem.textContent = `Lap ${index + 1}: ${formatTime(lap)} (${formatTime(calculateLapTime(index))})`;
+        listItem.textContent = `Lap ${index + 1}: ${formatTime(lap)}`;
         lapList.appendChild(listItem);
     });
-}
-
-function calculateLapTime(index) {
-    if (index === 0) {
-        return lapTimes[0];
-    } else {
-        const lapTime = lapTimes[index] - lapTimes[index - 1];
-        return lapTime >= 0 ? lapTime : 0;
-    }
 }
